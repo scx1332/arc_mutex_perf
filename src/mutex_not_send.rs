@@ -1,7 +1,7 @@
-use std::cell::RefCell;
+use std::cell::{UnsafeCell};
 
 pub struct MutexOnlySync {
-    val: RefCell<i32>,
+    val: UnsafeCell<i32>,
     notify: tokio::sync::Notify,
 }
 
@@ -14,41 +14,37 @@ impl Default for MutexOnlySync {
 impl MutexOnlySync {
     pub fn new() -> Self {
         Self {
-            val: RefCell::new(0),
+            val: UnsafeCell::new(0),
             notify: tokio::sync::Notify::new(),
         }
     }
 
     pub async fn lock(&self) {
-        if *self.val.borrow() == 0 {
-            *self.val.borrow_mut() = 1;
-        } else {
-            *self.val.borrow_mut() += 1;
-            self.notify.notified().await;
-        }
-    }
 
-    pub async fn busy_lock(&self) {
-        loop {
-            if *self.val.borrow() == 0 {
-                *self.val.borrow_mut() = 1;
-                break;
+        unsafe {
+            if *self.val.get() == 0 {
+                *self.val.get() = 1;
             } else {
-                tokio::task::yield_now().await;
+                *self.val.get() += 1;
+                self.notify.notified().await;
             }
         }
     }
 
     pub fn unlock(&self) {
-        if *self.val.borrow() == 1 {
-            *self.val.borrow_mut() = 0;
-        } else {
-            *self.val.borrow_mut() -= 1;
-            self.notify.notify_one();
+        unsafe {
+            if *self.val.get() == 1 {
+                *self.val.get() = 0;
+            } else {
+                *self.val.get() -= 1;
+                self.notify.notify_one();
+            }
         }
     }
 
     pub fn lock_count(&self) -> i32 {
-        *self.val.borrow()
+        unsafe {
+            *self.val.get()
+        }
     }
 }
