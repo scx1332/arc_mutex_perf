@@ -82,23 +82,23 @@ async fn primitive_lock(n: u64) -> f64 {
 }
 
 fn criterion_benchmark(c: &mut Criterion) {
-    let mut group = c.benchmark_group("Random number generation");
+    let mut group = c.benchmark_group("gr");
     let iterations = 1000000;
     group.bench_function("rand", |b| {
         b.to_async(FuturesExecutor).iter(|| normal_rand(iterations))
     });
-    group.bench_function("rand_fut", |b| {
+    group.bench_function("rand_with_await", |b| {
         b.to_async(FuturesExecutor)
             .iter(|| normal_rand_with_await(iterations))
     });
-    group.bench_function("fast", |b| {
+    group.bench_function("fast_raw", |b| {
         b.to_async(FuturesExecutor)
             .iter(|| fastrand_raw(iterations))
     });
-    group.bench_function("rc", |b| {
+    group.bench_function("fast_rc", |b| {
         b.to_async(FuturesExecutor).iter(|| fastrand_rc(iterations))
     });
-    group.bench_function("arc", |b| {
+    group.bench_function("fast_arc", |b| {
         b.to_async(FuturesExecutor)
             .iter(|| fastrand_arc(iterations))
     });
