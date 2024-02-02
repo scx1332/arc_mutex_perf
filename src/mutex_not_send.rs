@@ -2,7 +2,7 @@ use std::cell::{UnsafeCell};
 
 pub struct MutexOnlySync {
     val: UnsafeCell<i32>,
-    notify: tokio::sync::Notify,
+    notify: UnsafeCell<Option<tokio::sync::Notify>>,
 }
 
 impl Default for MutexOnlySync {
@@ -15,7 +15,7 @@ impl MutexOnlySync {
     pub fn new() -> Self {
         Self {
             val: UnsafeCell::new(0),
-            notify: tokio::sync::Notify::new(),
+            notify: None.into()
         }
     }
 
@@ -26,7 +26,10 @@ impl MutexOnlySync {
                 *self.val.get() = 1;
             } else {
                 *self.val.get() += 1;
-                self.notify.notified().await;
+                if (*self.notify.get()).is_none() {
+                    *self.notify.get() = Some(tokio::sync::Notify::new());
+                }
+                (*self.notify.get()).as_mut().unwrap().notified().await;
             }
         }
     }
@@ -37,7 +40,7 @@ impl MutexOnlySync {
                 *self.val.get() = 0;
             } else {
                 *self.val.get() -= 1;
-                self.notify.notify_one();
+                (*self.notify.get()).as_mut().unwrap().notify_one();
             }
         }
     }
