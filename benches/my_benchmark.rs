@@ -37,11 +37,13 @@ fn normal_rand(n: u64) -> f64 {
 }
 
 fn criterion_benchmark(c: &mut Criterion) {
+    let mut group = c.benchmark_group("Random number generation");
     let iterations = 1000000;
-    c.bench_function("normal_rand", |b| b.iter(|| normal_rand(iterations)));
-    c.bench_function("fastrand_raw", |b| b.iter(|| fastrand_raw(iterations)));
-    c.bench_function("fastrand_rc", |b| b.iter(|| fastrand_rc(iterations)));
-    c.bench_function("fastrand_arc", |b| b.iter(|| fastrand_arc(iterations)));
+    group.bench_function("normal_rand", |b| b.iter(|| normal_rand(iterations)));
+    group.bench_function("fastrand_raw", |b| b.iter(|| fastrand_raw(iterations)));
+    group.bench_function("fastrand_rc", |b| b.iter(|| fastrand_rc(iterations)));
+    group.bench_function("fastrand_arc", |b| b.iter(|| fastrand_arc(iterations)));
+    group.finish();
 }
 
 criterion_group!(benches, criterion_benchmark);
