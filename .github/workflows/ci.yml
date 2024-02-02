@@ -46,4 +46,11 @@ jobs:
         run: cargo bench --no-run
 
       - name: Run benches
-        run: cargo bench
+        run: cargo bench | tee output.txt
+
+  store-results:
+    name: Store benchmark result
+    uses: benchmark-action/github-action-benchmark@v1
+    with:
+      tool: 'cargo'
+      output-file-path: output.txt
