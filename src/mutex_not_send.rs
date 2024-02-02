@@ -28,6 +28,17 @@ impl MutexOnlySync {
         }
     }
 
+    pub async fn busy_lock(&self) {
+        loop {
+            if *self.val.borrow() == 0 {
+                *self.val.borrow_mut() = 1;
+                break;
+            } else {
+                tokio::task::yield_now().await;
+            }
+        }
+    }
+
     pub fn unlock(&self) {
         if *self.val.borrow() == 1 {
             *self.val.borrow_mut() = 0;
@@ -35,5 +46,9 @@ impl MutexOnlySync {
             *self.val.borrow_mut() -= 1;
             self.notify.notify_one();
         }
+    }
+
+    pub fn lock_count(&self) -> i32 {
+        *self.val.borrow()
     }
 }
