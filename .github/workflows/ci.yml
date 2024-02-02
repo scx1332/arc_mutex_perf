@@ -43,7 +43,7 @@ jobs:
         uses: Swatinem/rust-cache@v2
 
       - name: Build benches
-        run: cargo bench --release --no-run
+        run: cargo bench --no-run
 
       - name: Run benches
-        run: cargo bench --release
+        run: cargo bench
