@@ -1,8 +1,8 @@
+use criterion::{criterion_group, criterion_main, Criterion};
+use rand::Rng;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
-use criterion::{criterion_group, criterion_main, Criterion};
-use rand::Rng;
 fn fastrand_raw(n: u64) -> f64 {
     let mut r = fastrand::Rng::new();
     let mut next = 0.0;

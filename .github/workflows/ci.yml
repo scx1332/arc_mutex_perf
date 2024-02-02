@@ -30,7 +30,7 @@ jobs:
         run: cargo clippy --all-targets --all-features --all -- -D warnings
 
   benches:
-    name: ERC20 processor build only
+    name: Run benches
     timeout-minutes: 20
 
     runs-on: ubuntu-latest
