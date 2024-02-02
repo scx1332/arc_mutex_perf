@@ -42,5 +42,8 @@ jobs:
       - name: Cache dependencies
         uses: Swatinem/rust-cache@v2
 
-      - name: Build erc20 processor
-        run: cargo bench
+      - name: Build benches
+        run: cargo bench --release --no-run
+
+      - name: Run benches
+        run: cargo bench --release
