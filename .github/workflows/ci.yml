@@ -48,7 +48,14 @@ jobs:
       - name: Run benches
         run: cargo bench | tee output.txt
 
-      - name: Store benchmark result
-        uses: actions/upload-pages-artifact@v1
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
           path: './target/criterion/'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
