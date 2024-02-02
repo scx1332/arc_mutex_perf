@@ -1,4 +1,4 @@
-use std::cell::{UnsafeCell};
+use std::cell::UnsafeCell;
 
 pub struct MutexOnlySync {
     val: UnsafeCell<i32>,
@@ -15,12 +15,11 @@ impl MutexOnlySync {
     pub fn new() -> Self {
         Self {
             val: UnsafeCell::new(0),
-            notify: None.into()
+            notify: None.into(),
         }
     }
 
     pub async fn lock(&self) {
-
         unsafe {
             if *self.val.get() == 0 {
                 *self.val.get() = 1;
@@ -46,8 +45,6 @@ impl MutexOnlySync {
     }
 
     pub fn lock_count(&self) -> i32 {
-        unsafe {
-            *self.val.get()
-        }
+        unsafe { *self.val.get() }
     }
 }
